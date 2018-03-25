@@ -72,7 +72,7 @@ public class CountryController
 		return countryService.getPublicHolidays(id, provinceId);
 	}
 
-	@GetMapping("/{id}/holidays/{date}/{days}")
+	@GetMapping("/{id}/{date}/{days}")
 	public String getBusinessDaysIn(@PathVariable String id,
 									@PathVariable String date,
 									@PathVariable Integer days,
