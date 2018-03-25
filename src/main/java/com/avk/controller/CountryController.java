@@ -31,7 +31,7 @@ public class CountryController
 	{
 		List<CountryModel> countryModels = countryService.getCountries();
 		
-		countryModels.forEach(model -> CountryModelBuilder.buildLinks(model));
+		countryModels.forEach(CountryModelBuilder::buildLinks);
 		
 		return countryModels;
 	}
@@ -70,5 +70,14 @@ public class CountryController
 			@RequestParam(required = false, name = "province_id") String provinceId) throws RuntimeException
 	{
 		return countryService.getPublicHolidays(id, provinceId);
+	}
+
+	@GetMapping("/{id}/holidays/{date}/{days}")
+	public String getBusinessDaysIn(@PathVariable String id,
+									@PathVariable String date,
+									@PathVariable Integer days,
+									@RequestParam(required = false, name = "province_id") String provinceId) throws RuntimeException
+	{
+		return countryService.getBusinessDaysIn(id, date, days, provinceId);
 	}
 }

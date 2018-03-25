@@ -8,9 +8,10 @@ import com.avk.model.PublicHolidayModel;
 
 public interface CountryService
 {
-	public CountryModel getCountry(String id);
-	public List<ProvinceModel> getCountryProvinces(String id);
-	public List<CountryModel> getCountries();
-	public List<PublicHolidayModel> getPublicHolidays(String countryId, String provinceId);
-	public PublicHolidayModel getPublicHoliday(String id, String date, String provinceId);
+	CountryModel getCountry(String id);
+	List<ProvinceModel> getCountryProvinces(String id);
+	List<CountryModel> getCountries();
+	List<PublicHolidayModel> getPublicHolidays(String countryId, String provinceId);
+	PublicHolidayModel getPublicHoliday(String id, String date, String provinceId);
+	String getBusinessDaysIn(String id, String date, Integer days, String provinceId);
 }

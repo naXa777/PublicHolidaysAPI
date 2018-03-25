@@ -1,11 +1,13 @@
 package com.avk.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.regex.Pattern;
 
+import com.avk.database.WorkDayRule;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -81,13 +83,13 @@ public class CountryServiceImpl implements CountryService
 			ProvinceEntity province = countryRepository.getProvince(countryId, provinceId);
 			if (province != null)
 			{
-				province.getPublicHolidayEntities().forEach(publicHolidayEntity -> entities.add(publicHolidayEntity));
+				entities.addAll(province.getPublicHolidayEntities());
 			}
 			else
 				throw new ObjectNotFoundException("No province found for the id: " + provinceId + " for country: " + entity.getName());
 		}
-		
-		countryRepository.getNationalPublicHolidays(countryId).forEach(publicHolidayEntity -> entities.add(publicHolidayEntity));
+
+		entities.addAll(countryRepository.getNationalPublicHolidays(countryId));
 		
 		entities.forEach(publicHolidayEntity -> result.add(PublicHolidayModelBuilder.buildModel(publicHolidayEntity.getName(), publicHolidayEntity.getHolidayDateValue(), publicHolidayEntity.getNationalHoliday())));
 
@@ -95,12 +97,11 @@ public class CountryServiceImpl implements CountryService
 	}
 	
 	@Override
-	@Transactional
+	@Transactional(readOnly = true)
 	public PublicHolidayModel getPublicHoliday(String id, String date, String provinceId)
 	{
-		if (!p.matcher(date).matches())
-			throw new IllegalArgumentException("Date must be in the format YYYY-MM-DD");
-		
+		validateDate(date);
+
 		List<PublicHolidayModel> holidays = getPublicHolidays(id, provinceId);		
 		
 		PublicHolidayModel holiday = null;
@@ -112,6 +113,45 @@ public class CountryServiceImpl implements CountryService
 		}
 		
 		return holiday;
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public String getBusinessDaysIn(String countryId, String startDate, Integer days, String provinceId)
+	{
+		validateDate(startDate);
+
+		LocalDate localDate = LocalDate.parse(startDate);
+
+		int addedDays = 0;
+
+		CountryEntity entity = validateCountry(countryId);
+
+		List<PublicHolidayModel> publicHolidayModels = getPublicHolidays(countryId, provinceId);
+
+		WorkDayRule rule = entity.getWorkDayRule();
+
+		while (addedDays < days)
+		{
+			localDate = localDate.plusDays(1);
+			if (rule.isBusinessDay(localDate) && !isHoliday(localDate, publicHolidayModels))
+				addedDays++;
+		}
+
+		return localDate.toString();
+	}
+
+	private void validateDate(String date)
+	{
+		if (!p.matcher(date).matches())
+			throw new IllegalArgumentException("Date must be in the format YYYY-MM-DD");
+	}
+
+	private boolean isHoliday(LocalDate localDate, List<PublicHolidayModel> publicHolidayModels)
+	{
+		return publicHolidayModels.stream()
+				.map(PublicHolidayModel::getHolidayDate)
+				.anyMatch(localDate.toString()::equals);
 	}
 	
 	private CountryEntity validateCountry(String countryId)

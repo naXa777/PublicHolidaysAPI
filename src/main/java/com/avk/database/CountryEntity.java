@@ -58,4 +58,15 @@ public class CountryEntity
 	{
 		return publicHolidayEntities;
 	}
+
+	public WorkDayRule getWorkDayRule()
+	{
+		if (getId().equals(AUSTRALIA) ||
+				getId().equals(NEW_ZEALAND))
+		{
+			return new AustraliaWorkingDayRuleRules();
+		}
+		else
+			throw new IllegalArgumentException("Unknown working day rules for country: " + getId());
+	}
 }
