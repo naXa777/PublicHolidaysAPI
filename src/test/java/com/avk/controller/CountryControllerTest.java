@@ -3,22 +3,14 @@ package com.avk.controller;
 import com.avk.common.ObjectNotFoundException;
 import com.avk.database.CountryEntity;
 import com.avk.database.ProvinceEntity;
-import com.avk.model.CountryModel;
-import com.avk.model.CountryModelBuilder;
-import com.avk.model.ProvinceModel;
-import com.avk.model.ProvinceModelBuilder;
-import com.avk.model.PublicHolidayModel;
-import com.avk.model.PublicHolidayModelBuilder;
+import com.avk.model.*;
 import com.avk.service.CountryService;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
@@ -26,18 +18,15 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebAppConfiguration
-@RunWith(SpringRunner.class)
 @WebMvcTest(CountryController.class)
-public class CountryControllerTest
-{
+public class CountryControllerTest {
     private final String invalidCountry = "QQ";
     private final String newZealandName = "New Zealand";
     private final String australiaName = "Australia";
@@ -55,23 +44,22 @@ public class CountryControllerTest
     @MockBean
     private CountryService countryService;
 
-    @Before
-    public void setup()
-    {
+    @BeforeEach
+    public void setup() {
         CountryModel aus = CountryModelBuilder.buildModel(CountryEntity.AUSTRALIA, australiaName);
         CountryModel nz = CountryModelBuilder.buildModel(CountryEntity.NEW_ZEALAND, newZealandName);
-        
+
         ProvinceModel nsw = ProvinceModelBuilder.buildModel(ProvinceEntity.NSW, nswName);
-        
+
         PublicHolidayModel newYearsDay = PublicHolidayModelBuilder.buildModel(newYearsHolidayName, newYearsHolidayDay, true);
 
         List<CountryModel> countryList = new ArrayList<>();
         countryList.add(aus);
         countryList.add(nz);
-        
+
         List<ProvinceModel> provinceList = new ArrayList<>();
         provinceList.add(nsw);
-        
+
         List<PublicHolidayModel> publicHolidayList = new ArrayList<>();
         publicHolidayList.add(newYearsDay);
 
@@ -89,102 +77,92 @@ public class CountryControllerTest
     }
 
     @Test
-    public void testGetCountry() throws Exception
-    {
+    public void testGetCountry() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.NEW_ZEALAND).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$.countryId", is(CountryEntity.NEW_ZEALAND)));
         actions.andExpect(jsonPath("$.countryName", is(newZealandName)));
         actions.andExpect(jsonPath("$._links.self.href", is(basePath + controllerPath + CountryEntity.NEW_ZEALAND)));
         actions.andExpect(jsonPath("$._links.provinces.href", is(basePath + controllerPath + CountryEntity.NEW_ZEALAND + "/provinces")));
-        actions.andExpect(jsonPath("$._links.holidays.href", is(basePath + controllerPath + CountryEntity.NEW_ZEALAND + "/holidays{?provinceId}")));
+        actions.andExpect(jsonPath("$._links.holidays.href", is(basePath + controllerPath + CountryEntity.NEW_ZEALAND + "/holidays{?province_id}")));
     }
-    
+
     @Test
-    public void testGetCountryHolidays() throws Exception
-    {
+    public void testGetCountryHolidays() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/holidays").accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$", hasSize(1)));
         actions.andExpect(jsonPath("$[0].name", is(newYearsHolidayName)));
         actions.andExpect(jsonPath("$[0].holidayDate", is(newYearsHolidayDay)));
     }
 
     @Test
-    public void testGetCountryNotFound() throws Exception
-    {
+    public void testGetCountryNotFound() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + invalidCountry).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isNotFound());
     }
 
     @Test
-    public void testGetCountries() throws Exception
-    {
+    public void testGetCountries() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries").accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$", hasSize(2)));
         actions.andExpect(jsonPath("$[0].countryId", is(CountryEntity.AUSTRALIA)));
         actions.andExpect(jsonPath("$[1].countryId", is(CountryEntity.NEW_ZEALAND)));
     }
-    
+
     @Test
-    public void testGetProvinces() throws Exception
-    {
+    public void testGetProvinces() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/provinces").accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$", hasSize(1)));
         actions.andExpect(jsonPath("$[0].provinceId", is(ProvinceEntity.NSW)));
     }
-    
+
     @Test
-    public void testGetProvincesInvalidCountry() throws Exception
-    {
+    public void testGetProvincesInvalidCountry() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + invalidCountry + "/provinces").accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isNotFound());
     }
-    
+
     @Test
-    public void checkPublicHoliday() throws Exception
-    {
+    public void checkPublicHoliday() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/" + newYearsHolidayDay).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$.isHoliday", is(true)));
         actions.andExpect(jsonPath("$.publicHoliday.holidayDate", is(newYearsHolidayDay)));
     }
-    
+
     @Test
-    public void checkPublicHolidayNoHoliday() throws Exception
-    {
+    public void checkPublicHolidayNoHoliday() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/" + noHolidayDay).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isOk());
-        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+        actions.andExpect(content().contentType(MediaType.APPLICATION_JSON));
         actions.andExpect(jsonPath("$.isHoliday", is(false)));
     }
-    
+
     @Test
-    public void checkPublicHolidayInvalidDate() throws Exception
-    {
+    public void checkPublicHolidayInvalidDate() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/" + invalidDate).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isBadRequest());
     }
-    
+
     @Test
-    public void checkPublicHolidayInvalidCountry() throws Exception
-    {
+    public void checkPublicHolidayInvalidCountry() throws Exception {
         ResultActions actions = mockMvc.perform(get("/countries/" + invalidCountry + "/" + newYearsHolidayDay).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isNotFound());

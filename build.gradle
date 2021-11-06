@@ -1,47 +1,53 @@
 buildscript {
-	ext {
-		springBootVersion = '1.5.1.RELEASE'
-	}
-	repositories {
-		mavenCentral()
-	}
-	dependencies {
-		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
-	}
+    ext {
+        springBootVersion = '2.5.6'
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
 }
 
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
 apply plugin: 'jacoco'
 
 jar {
     baseName = 'holidays'
-    version =  '1.0.0'
+    version = '1.0.0'
     manifest {
-        attributes("Implementation-Title": "Public Holidays API",
-            "Implementation-Version": version,
-            "Main-Class": "com.avk.HolidaysApplication")
-            }
+        attributes(
+                "Implementation-Title": "Public Holidays API",
+                "Implementation-Version": version,
+                "Main-Class": "com.avk.HolidaysApplication"
+        )
+    }
 }
 
-sourceCompatibility = 1.8
+sourceCompatibility = 11
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	compile('org.springframework.boot:spring-boot-starter-actuator')
-	compile('org.springframework.boot:spring-boot-starter-aop')
-	compile('org.springframework.boot:spring-boot-starter-data-jpa')
-	compile('org.springframework.data:spring-data-rest-hal-browser')
-	compile('org.springframework.boot:spring-boot-starter-hateoas')
-	compile('org.springframework.retry:spring-retry')
-	compile('org.springframework.session:spring-session')
-	compile('org.springframework.boot:spring-boot-starter-web')
-	runtime('mysql:mysql-connector-java')
-	testCompile('org.springframework.boot:spring-boot-starter-test')
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-aop')
+    implementation('org.springframework.boot:spring-boot-starter-data-jpa')
+    implementation('org.springframework.data:spring-data-rest-hal-explorer')
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
+    implementation('org.springframework.retry:spring-retry')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    runtimeOnly('mysql:mysql-connector-java')
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+}
+
+test {
+    useJUnitPlatform()
 }
 
 jacocoTestReport {
@@ -52,7 +58,4 @@ jacocoTestReport {
         html.enabled true
         csv.enabled false
     }
-    //classDirectories = fileTree(dir: 'build/classes/main', include: 'com/thc/**')
-    //sourceDirectories = fileTree(dir: 'scr/java', include: 'com/thc/**')
-    //additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
 }
