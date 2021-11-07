@@ -15,6 +15,10 @@ With [HAL Explorer](https://docs.spring.io/spring-data/rest/docs/current/referen
 
 `/countries/AU/holidays?province_id=ACT` - Gives you a list of holidays in the specified Australian province
 
+`/countries/AU/2017-01-01` - Gives you info about a day in Australian calendar
+
+`/countries/AU/2017-01-01/10` - Gives you a list of Australian holidays starting from date 2017-01-01 till date 2017-01-11 (a range of 10 days)
+
 `/copyright` - Gives you a list of data sources and licenses
 
 `/actuator/health` - Shows application health information (for monitoring)

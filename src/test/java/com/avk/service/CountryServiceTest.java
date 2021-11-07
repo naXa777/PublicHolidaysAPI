@@ -200,12 +200,6 @@ public class CountryServiceTest {
     }
 
     @Test
-    public void getHolidayInvalidDate() {
-        assertThrows(IllegalArgumentException.class, () ->
-                countryService.getPublicHoliday(CountryEntity.AUSTRALIA, invalidDate, null));
-    }
-
-    @Test
     public void getHoliday() {
         PublicHolidayModel model = countryService.getPublicHoliday(CountryEntity.AUSTRALIA, newYearsHolidayDay, null);
 

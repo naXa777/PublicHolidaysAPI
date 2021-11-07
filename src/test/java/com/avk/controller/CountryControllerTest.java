@@ -72,7 +72,6 @@ public class CountryControllerTest {
         given(this.countryService.getPublicHolidays(invalidCountry, null)).willThrow(new ObjectNotFoundException(""));
         given(this.countryService.getPublicHoliday(CountryEntity.AUSTRALIA, newYearsHolidayDay, null)).willReturn(newYearsDay);
         given(this.countryService.getPublicHoliday(CountryEntity.AUSTRALIA, noHolidayDay, null)).willReturn(null);
-        given(this.countryService.getPublicHoliday(CountryEntity.AUSTRALIA, invalidDate, null)).willThrow(new IllegalArgumentException());
         given(this.countryService.getPublicHoliday(invalidCountry, newYearsHolidayDay, null)).willThrow(new ObjectNotFoundException(""));
     }
 
@@ -166,5 +165,12 @@ public class CountryControllerTest {
         ResultActions actions = mockMvc.perform(get("/countries/" + invalidCountry + "/" + newYearsHolidayDay).accept(MediaType.APPLICATION_JSON));
 
         actions.andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void checkBusinessDaysInInvalidDate() throws Exception {
+        ResultActions actions = mockMvc.perform(get("/countries/" + CountryEntity.AUSTRALIA + "/" + invalidDate + "/10").accept(MediaType.APPLICATION_JSON));
+
+        actions.andExpect(status().isBadRequest());
     }
 }

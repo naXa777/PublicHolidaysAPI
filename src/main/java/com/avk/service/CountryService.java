@@ -7,6 +7,9 @@ import com.avk.model.PublicHolidayModel;
 import java.util.List;
 
 public interface CountryService {
+
+    String DATE_FORMAT_PATTERN = "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$";
+
     CountryModel getCountry(String id);
 
     List<ProvinceModel> getCountryProvinces(String id);
@@ -17,5 +20,5 @@ public interface CountryService {
 
     PublicHolidayModel getPublicHoliday(String id, String date, String provinceId);
 
-    String getBusinessDaysIn(String id, String date, Integer days, String provinceId);
+    List<String> getBusinessDaysIn(String id, String date, Integer days, String provinceId);
 }

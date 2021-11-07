@@ -12,13 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class CountryServiceImpl implements CountryService {
     private final CountryRepository countryRepository;
-
-    private final Pattern p = Pattern.compile("\\d{4}-\\d{2}-\\d{2}");
 
     public CountryServiceImpl(CountryRepository countryRepository) {
         this.countryRepository = countryRepository;
@@ -81,8 +78,6 @@ public class CountryServiceImpl implements CountryService {
     @Override
     @Transactional(readOnly = true)
     public PublicHolidayModel getPublicHoliday(String id, String date, String provinceId) {
-        validateDate(date);
-
         List<PublicHolidayModel> holidays = getPublicHolidays(id, provinceId);
 
         PublicHolidayModel holiday = null;
@@ -97,12 +92,11 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     @Transactional(readOnly = true)
-    public String getBusinessDaysIn(String countryId, String startDate, Integer days, String provinceId) {
-        validateDate(startDate);
-
+    public List<String> getBusinessDaysIn(String countryId, String startDate, Integer days, String provinceId) {
         LocalDate localDate = LocalDate.parse(startDate);
 
         int addedDays = 0;
+        List<String> businessDays = new LinkedList<>();
 
         CountryEntity entity = validateCountry(countryId);
 
@@ -112,16 +106,13 @@ public class CountryServiceImpl implements CountryService {
 
         while (addedDays < days) {
             localDate = localDate.plusDays(1);
-            if (rule.isBusinessDay(localDate) && !isHoliday(localDate, publicHolidayModels))
-                addedDays++;
+            if (rule.isBusinessDay(localDate) && !isHoliday(localDate, publicHolidayModels)) {
+                businessDays.add(localDate.toString());
+            }
+            addedDays++;
         }
 
-        return localDate.toString();
-    }
-
-    private void validateDate(String date) {
-        if (!p.matcher(date).matches())
-            throw new IllegalArgumentException("Date must be in the format YYYY-MM-DD");
+        return businessDays;
     }
 
     private boolean isHoliday(LocalDate localDate, List<PublicHolidayModel> publicHolidayModels) {

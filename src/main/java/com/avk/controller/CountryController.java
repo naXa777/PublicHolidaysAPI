@@ -2,10 +2,13 @@ package com.avk.controller;
 
 import com.avk.model.*;
 import com.avk.service.CountryService;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/countries")
 public class CountryController {
@@ -40,7 +43,9 @@ public class CountryController {
 
     @GetMapping("/{id}/{date}")
     public DateModel checkPublicHolidayDate(
-            @PathVariable String id, @PathVariable String date,
+            @PathVariable String id,
+            @Pattern(regexp = CountryService.DATE_FORMAT_PATTERN, message = "Date must be in the format YYYY-MM-DD")
+            @PathVariable String date,
             @RequestParam(required = false, name = "province_id") String provinceId
     ) throws RuntimeException {
         DateModel dateModel = new DateModel();
@@ -62,8 +67,9 @@ public class CountryController {
     }
 
     @GetMapping("/{id}/{date}/{days}")
-    public String getBusinessDaysIn(
+    public List<String> getBusinessDaysIn(
             @PathVariable String id,
+            @Pattern(regexp = CountryService.DATE_FORMAT_PATTERN, message = "Date must be in the format YYYY-MM-DD")
             @PathVariable String date,
             @PathVariable Integer days,
             @RequestParam(required = false, name = "province_id") String provinceId
