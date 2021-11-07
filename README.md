@@ -1,7 +1,7 @@
 Public Holidays API
 ===========
 
-A web API for getting public holidays created using Spring Boot 2.
+A web API for getting public holidays. The app is powered by Spring Boot 2.
 
 ## API Summary
 
@@ -48,7 +48,7 @@ To stop and remove all containers of the sample application run:
 docker-compose down
 ```
 
-## Running Tests
+### Test Using Gradle
 
 Run `gradlew test` to run the test suite.
 
