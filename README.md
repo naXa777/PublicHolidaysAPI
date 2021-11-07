@@ -30,6 +30,8 @@ Database contains holidays for 2017 and 2018 years only.
 
 ## Build & Run
 
+### Build Using Gradle
+
 Run `gradlew build` to build the project in production mode. The build artifacts will be stored in the `build/libs/` directory.
 
 ### Run Using Docker
@@ -49,3 +51,7 @@ docker-compose down
 ## Running Tests
 
 Run `gradlew test` to run the test suite.
+
+## Contributing
+
+See [the contributing guide](CONTRIBUTING.md) for detailed instructions on how to get started.
