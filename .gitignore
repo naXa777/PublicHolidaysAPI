@@ -2,6 +2,9 @@
 /build/
 /out/
 !gradle/wrapper/gradle-wrapper.jar
+holidays.log
+holidays.log.*.gz
+migrate-to-1.0.sh
 
 ### STS ###
 .apt_generated

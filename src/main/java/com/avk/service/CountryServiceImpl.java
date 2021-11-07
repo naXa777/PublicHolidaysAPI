@@ -136,7 +136,7 @@ public class CountryServiceImpl implements CountryService {
 
         Optional<CountryEntity> entity = countryRepository.findById(countryId);
 
-        if (!entity.isPresent())
+        if (entity.isEmpty())
             throw new ObjectNotFoundException("No country found for the id: " + countryId);
 
         return entity.get();

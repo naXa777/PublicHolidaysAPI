@@ -6,12 +6,16 @@ import com.avk.model.PublicHolidayModel;
 
 import java.util.List;
 
-public interface CountryService
-{
-	CountryModel getCountry(String id);
-	List<ProvinceModel> getCountryProvinces(String id);
-	List<CountryModel> getCountries();
-	List<PublicHolidayModel> getPublicHolidays(String countryId, String provinceId);
-	PublicHolidayModel getPublicHoliday(String id, String date, String provinceId);
-	String getBusinessDaysIn(String id, String date, Integer days, String provinceId);
+public interface CountryService {
+    CountryModel getCountry(String id);
+
+    List<ProvinceModel> getCountryProvinces(String id);
+
+    List<CountryModel> getCountries();
+
+    List<PublicHolidayModel> getPublicHolidays(String countryId, String provinceId);
+
+    PublicHolidayModel getPublicHoliday(String id, String date, String provinceId);
+
+    String getBusinessDaysIn(String id, String date, Integer days, String provinceId);
 }
