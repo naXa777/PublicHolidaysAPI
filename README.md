@@ -17,6 +17,8 @@ With [HAL Explorer](https://docs.spring.io/spring-data/rest/docs/current/referen
 
 `/copyright` - Gives you a list of data sources and licenses
 
+`/actuator/health` - Shows application health information (for monitoring)
+
 ## Supported Countries
 
 | code | name |
@@ -26,7 +28,7 @@ With [HAL Explorer](https://docs.spring.io/spring-data/rest/docs/current/referen
 | NZ | New Zealand |
 | SG | Singapore |
 
-Database contains holidays for 2017 and 2018 years only.
+Currently, database contains holidays for 2017 and 2018 years only.
 
 ## Build & Run
 
