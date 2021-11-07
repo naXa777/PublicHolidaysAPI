@@ -1,8 +1,14 @@
 name: CI/CD Pipeline
+# Trigger the workflow
 on:
+  # manually
   workflow_dispatch:
-  # Trigger the workflow on push to the master branch
+  # on push to the master branch
   push:
+    branches:
+      - master
+  # on pull request to the master branch
+  pull_request:
     branches:
       - master
 jobs:
@@ -11,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # Set up JDK 11
+      # Set up JDK 11 and cache for Gradle dependencies
       - name: Set up JDK
         uses: actions/setup-java@v2
         with:
